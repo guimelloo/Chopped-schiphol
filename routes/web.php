@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BoekingController;
+use App\Http\Controllers\CoordinatorController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VluchtController;
 use Illuminate\Foundation\Application;
@@ -21,6 +22,11 @@ Route::get('/boekingen/nieuw/{vlucht}', [BoekingController::class, 'create'])->n
 Route::post('/boekingen/bevestigen', [BoekingController::class, 'bevestigen'])->name('boekingen.bevestigen');
 Route::post('/boekingen', [BoekingController::class, 'store'])->name('boekingen.store');
 Route::get('/boekingen/{boekingsNummer}', [BoekingController::class, 'show'])->name('boekingen.show');
+
+// Coordinator — inloggen en uitloggen
+Route::get('/coordinator/inloggen', [CoordinatorController::class, 'loginForm'])->name('coordinator.login');
+Route::post('/coordinator/inloggen', [CoordinatorController::class, 'login'])->name('coordinator.login.post');
+Route::post('/coordinator/uitloggen', [CoordinatorController::class, 'logout'])->name('coordinator.logout');
 
 // Bestaande gebruiker-authenticatie routes
 Route::get('/dashboard', function () {
