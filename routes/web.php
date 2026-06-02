@@ -16,10 +16,11 @@ Route::get('/vluchten', [VluchtController::class, 'index'])->name('vluchten.inde
 Route::get('/vluchten/zoek', [VluchtController::class, 'zoek'])->name('vluchten.zoek');
 Route::get('/vluchten/{vlucht}', [VluchtController::class, 'show'])->name('vluchten.show');
 
-// Boekingen — aanmaken en bevestigen
+// Boekingen
 Route::get('/boekingen/nieuw/{vlucht}', [BoekingController::class, 'create'])->name('boekingen.create');
 Route::post('/boekingen/bevestigen', [BoekingController::class, 'bevestigen'])->name('boekingen.bevestigen');
 Route::post('/boekingen', [BoekingController::class, 'store'])->name('boekingen.store');
+Route::get('/boekingen/{boekingsNummer}', [BoekingController::class, 'show'])->name('boekingen.show');
 
 // Bestaande gebruiker-authenticatie routes
 Route::get('/dashboard', function () {
