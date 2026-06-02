@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BoekingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VluchtController;
 use Illuminate\Foundation\Application;
@@ -14,6 +15,11 @@ Route::get('/', function () {
 Route::get('/vluchten', [VluchtController::class, 'index'])->name('vluchten.index');
 Route::get('/vluchten/zoek', [VluchtController::class, 'zoek'])->name('vluchten.zoek');
 Route::get('/vluchten/{vlucht}', [VluchtController::class, 'show'])->name('vluchten.show');
+
+// Boekingen — aanmaken en bevestigen
+Route::get('/boekingen/nieuw/{vlucht}', [BoekingController::class, 'create'])->name('boekingen.create');
+Route::post('/boekingen/bevestigen', [BoekingController::class, 'bevestigen'])->name('boekingen.bevestigen');
+Route::post('/boekingen', [BoekingController::class, 'store'])->name('boekingen.store');
 
 // Bestaande gebruiker-authenticatie routes
 Route::get('/dashboard', function () {
