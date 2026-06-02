@@ -36,6 +36,45 @@ class VluchtController extends Controller
         ]);
     }
 
+    public function zoek(Request $request): Response
+    {
+        $resultaten = [];
+
+        if ($request->filled('vertrek_datum')) {
+            $query = Vlucht::with(['luchtvaartmaatschappij', 'gate'])
+                ->whereDate('vertrek_tijd', $request->vertrek_datum)
+                ->where('status', '!=', 'geannuleerd');
+
+            if ($request->filled('vertrek_luchthaven')) {
+                $query->where('vertrek_luchthaven', 'like', '%' . $request->vertrek_luchthaven . '%');
+            }
+
+            if ($request->filled('aankomst_luchthaven')) {
+                $query->where('aankomst_luchthaven', 'like', '%' . $request->aankomst_luchthaven . '%');
+            }
+
+            if ($request->filled('stoelklasse') && in_array($request->stoelklasse, ['economy', 'business'])) {
+                $kolom = 'stoelen_' . $request->stoelklasse;
+                $query->where($kolom, '>', 0);
+            }
+
+            $resultaten = $query->orderBy('vertrek_tijd')
+                ->get()
+                ->map(fn (Vlucht $v) => $this->formatVlucht($v));
+        }
+
+        return Inertia::render('Vluchten/Zoek', [
+            'resultaten'  => $resultaten,
+            'zoekwaarden' => $request->only([
+                'vertrek_luchthaven',
+                'aankomst_luchthaven',
+                'vertrek_datum',
+                'stoelklasse',
+                'stoel_voorkeur',
+            ]),
+        ]);
+    }
+
     private function formatVlucht(Vlucht $vlucht): array
     {
         return [

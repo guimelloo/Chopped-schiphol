@@ -10,8 +10,9 @@ Route::get('/', function () {
     return redirect()->route('vluchten.index');
 });
 
-// Vluchten — overzicht en detail
+// Vluchten
 Route::get('/vluchten', [VluchtController::class, 'index'])->name('vluchten.index');
+Route::get('/vluchten/zoek', [VluchtController::class, 'zoek'])->name('vluchten.zoek');
 Route::get('/vluchten/{vlucht}', [VluchtController::class, 'show'])->name('vluchten.show');
 
 // Bestaande gebruiker-authenticatie routes
