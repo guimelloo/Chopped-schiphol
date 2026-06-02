@@ -23,10 +23,14 @@ Route::post('/boekingen/bevestigen', [BoekingController::class, 'bevestigen'])->
 Route::post('/boekingen', [BoekingController::class, 'store'])->name('boekingen.store');
 Route::get('/boekingen/{boekingsNummer}', [BoekingController::class, 'show'])->name('boekingen.show');
 
-// Coordinator — inloggen en uitloggen
+// Coordinator
 Route::get('/coordinator/inloggen', [CoordinatorController::class, 'loginForm'])->name('coordinator.login');
 Route::post('/coordinator/inloggen', [CoordinatorController::class, 'login'])->name('coordinator.login.post');
 Route::post('/coordinator/uitloggen', [CoordinatorController::class, 'logout'])->name('coordinator.logout');
+
+Route::middleware('coordinator')->group(function () {
+    Route::get('/coordinator/dashboard', [CoordinatorController::class, 'dashboard'])->name('coordinator.dashboard');
+});
 
 // Bestaande gebruiker-authenticatie routes
 Route::get('/dashboard', function () {
