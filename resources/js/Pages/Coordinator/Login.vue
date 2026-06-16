@@ -1,25 +1,32 @@
 <script setup>
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3'
+import LanguageSwitcher from '@/Components/LanguageSwitcher.vue'
+import { useI18n } from '@/composables/useI18n.js'
+
+const { t } = useI18n()
 
 const formulier = useForm({
     gebruikersnaam: '',
     wachtwoord: '',
     onthouden: false,
-});
+})
 
 function inloggen() {
     formulier.post(route('coordinator.login.post'), {
         onFinish: () => formulier.reset('wachtwoord'),
-    });
+    })
 }
 </script>
 
 <template>
-    <Head title="Coördinator Inloggen" />
+    <Head :title="t('coordinator.login')" />
 
     <div class="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-900 to-blue-700 px-4">
         <div class="w-full max-w-md">
-            <!-- Logo -->
+            <div class="mb-2 flex justify-end">
+                <LanguageSwitcher />
+            </div>
+
             <div class="mb-8 text-center text-white">
                 <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-400 shadow-lg">
                     <svg class="h-9 w-9 text-blue-900" fill="currentColor" viewBox="0 0 24 24">
@@ -27,14 +34,12 @@ function inloggen() {
                     </svg>
                 </div>
                 <h1 class="text-2xl font-bold">Schiphol Vluchtbeheer</h1>
-                <p class="mt-1 text-blue-200">Coördinator portaal</p>
+                <p class="mt-1 text-blue-200">{{ t('coordinator.portal') }}</p>
             </div>
 
-            <!-- Inlogformulier -->
             <div class="rounded-2xl bg-white p-8 shadow-2xl">
-                <h2 class="mb-6 text-xl font-bold text-gray-900">Inloggen</h2>
+                <h2 class="mb-6 text-xl font-bold text-gray-900">{{ t('coordinator.login') }}</h2>
 
-                <!-- Foutmelding -->
                 <div
                     v-if="formulier.errors.gebruikersnaam"
                     class="mb-5 flex items-center gap-3 rounded-lg bg-red-50 border border-red-200 p-4 text-sm text-red-700"
@@ -47,9 +52,7 @@ function inloggen() {
 
                 <form @submit.prevent="inloggen" class="space-y-5">
                     <div>
-                        <label class="mb-1.5 block text-sm font-semibold text-gray-700">
-                            Gebruikersnaam
-                        </label>
+                        <label class="mb-1.5 block text-sm font-semibold text-gray-700">{{ t('coordinator.username') }}</label>
                         <input
                             v-model="formulier.gebruikersnaam"
                             type="text"
@@ -62,9 +65,7 @@ function inloggen() {
                     </div>
 
                     <div>
-                        <label class="mb-1.5 block text-sm font-semibold text-gray-700">
-                            Wachtwoord
-                        </label>
+                        <label class="mb-1.5 block text-sm font-semibold text-gray-700">{{ t('coordinator.password') }}</label>
                         <input
                             v-model="formulier.wachtwoord"
                             type="password"
@@ -76,13 +77,8 @@ function inloggen() {
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <input
-                            v-model="formulier.onthouden"
-                            id="onthouden"
-                            type="checkbox"
-                            class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        />
-                        <label for="onthouden" class="text-sm text-gray-600">Onthoud mij</label>
+                        <input v-model="formulier.onthouden" id="onthouden" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                        <label for="onthouden" class="text-sm text-gray-600">{{ t('coordinator.remember') }}</label>
                     </div>
 
                     <button
@@ -90,12 +86,12 @@ function inloggen() {
                         :disabled="formulier.processing"
                         class="w-full rounded-lg bg-blue-900 py-3 font-bold text-white transition hover:bg-blue-800 disabled:opacity-60"
                     >
-                        {{ formulier.processing ? 'Bezig met inloggen...' : 'Inloggen' }}
+                        {{ formulier.processing ? t('coordinator.loggingIn') : t('coordinator.loginBtn') }}
                     </button>
                 </form>
 
                 <div class="mt-6 border-t border-gray-100 pt-5 text-center text-xs text-gray-400">
-                    Testaccounts: <strong>admin</strong> / admin123
+                    {{ t('director.adminAccount') }}: <strong>admin</strong> / admin123
                 </div>
             </div>
         </div>
