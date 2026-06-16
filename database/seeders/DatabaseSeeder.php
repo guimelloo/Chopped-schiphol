@@ -12,7 +12,6 @@ use App\Models\User;
 use App\Models\Verlanglijst;
 use App\Models\Vlucht;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -22,7 +21,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name'     => 'Test Gebruiker',
             'email'    => 'test@example.com',
-            'password' => \Illuminate\Support\Facades\Hash::make('password'),
+            'password' => 'password',
         ]);
 
         // ─── Luchtvaartmaatschappijen ─────────────────────────────────────────
@@ -311,7 +310,7 @@ class DatabaseSeeder extends Seeder
         Directeur::create([
             'naam'           => 'Pieter Smit',
             'gebruikersnaam' => 'directeur',
-            'wachtwoord'     => Hash::make('directeur123'),
+            'wachtwoord'     => 'directeur123',
         ]);
 
         // ─── Reizigers ────────────────────────────────────────────────────────
