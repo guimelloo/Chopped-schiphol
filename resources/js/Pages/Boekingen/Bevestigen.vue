@@ -1,0 +1,146 @@
+<script setup>
+import { Head, useForm } from '@inertiajs/vue3'
+import SchipholLayout from '@/Layouts/SchipholLayout.vue'
+import { useI18n } from '@/composables/useI18n.js'
+
+const { t } = useI18n()
+
+const props = defineProps({
+    data: Object,
+    prijs: [String, Number],
+    vlucht: Object,
+})
+
+const btw    = (parseFloat(props.prijs) * 0.21).toFixed(2)
+const totaal = parseFloat(props.prijs).toFixed(2)
+const netto  = (parseFloat(props.prijs) - parseFloat(btw)).toFixed(2)
+
+const formulier = useForm({ ...props.data })
+
+function naarBetaling() {
+    formulier.post(route('boekingen.betalen'))
+}
+</script>
+
+<template>
+    <Head :title="t('booking.confirm')" />
+    <SchipholLayout>
+        <div class="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+            <h1 class="mb-2 text-3xl font-bold text-gray-900">{{ t('booking.confirm') }}</h1>
+            <p class="mb-8 text-gray-600">Controleer uw gegevens en bevestig de boeking.</p>
+
+            <!-- Step indicator -->
+            <div class="mb-8 flex items-center gap-3">
+                <div class="flex items-center gap-2">
+                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white text-sm font-bold">✓</div>
+                    <span class="text-sm font-medium text-gray-700">{{ t('booking.step1') }}</span>
+                </div>
+                <div class="h-px flex-1 bg-gray-300"></div>
+                <div class="flex items-center gap-2">
+                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-900 text-white text-sm font-bold">2</div>
+                    <span class="text-sm font-semibold text-blue-900">{{ t('booking.step2') }}</span>
+                </div>
+                <div class="h-px flex-1 bg-gray-300"></div>
+                <div class="flex items-center gap-2">
+                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-gray-500 text-sm font-bold">3</div>
+                    <span class="text-sm text-gray-500">{{ t('booking.step3') }}</span>
+
+                </div>
+            </div>
+
+            <div class="grid gap-6 md:grid-cols-2">
+                <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                    <h2 class="mb-4 text-lg font-bold text-gray-900">{{ t('booking.flightDetails') }}</h2>
+                    <dl class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <dt class="text-gray-500">{{ t('flight.number') }}</dt>
+                            <dd class="font-semibold">{{ vlucht.vlucht_nummer }}</dd>
+                        </div>
+                        <div class="flex justify-between">
+                            <dt class="text-gray-500">{{ t('flight.airline') }}</dt>
+                            <dd class="font-semibold">{{ vlucht.luchtvaartmaatschappij }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-500 mb-1">{{ t('flight.route') }}</dt>
+                            <dd class="font-semibold">{{ vlucht.vertrek_luchthaven }}</dd>
+                            <dd class="font-semibold text-blue-900">→ {{ vlucht.aankomst_luchthaven }}</dd>
+                        </div>
+                        <div class="flex justify-between">
+                            <dt class="text-gray-500">{{ t('flight.departure') }}</dt>
+                            <dd class="font-semibold">{{ vlucht.vertrek_tijd }}</dd>
+                        </div>
+                        <div class="flex justify-between">
+                            <dt class="text-gray-500">{{ t('flight.arrival') }}</dt>
+                            <dd class="font-semibold">{{ vlucht.aankomst_tijd }}</dd>
+                        </div>
+                        <div class="flex justify-between">
+                            <dt class="text-gray-500">{{ t('booking.seatClass') }}</dt>
+                            <dd>
+                                <span class="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-800 capitalize">
+                                    {{ data.stoelklasse }}
+                                </span>
+                            </dd>
+                        </div>
+                        <div v-if="data.stoel_voorkeur" class="flex justify-between">
+                            <dt class="text-gray-500">{{ t('booking.seatPrefLabel') }}</dt>
+                            <dd class="font-semibold capitalize">{{ data.stoel_voorkeur }}</dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                    <h2 class="mb-4 text-lg font-bold text-gray-900">{{ t('booking.passenger') }}</h2>
+                    <dl class="space-y-3 text-sm">
+                        <div>
+                            <dt class="text-gray-500">{{ t('booking.name') }}</dt>
+                            <dd class="font-semibold">{{ data.naam_reiziger }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-500">{{ t('booking.email') }}</dt>
+                            <dd class="font-semibold">{{ data.email_reiziger }}</dd>
+                        </div>
+                        <div v-if="data.telefoon_reiziger">
+                            <dt class="text-gray-500">{{ t('booking.phone') }}</dt>
+                            <dd class="font-semibold">{{ data.telefoon_reiziger }}</dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="mt-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                <h2 class="mb-4 text-lg font-bold text-gray-900">{{ t('booking.costs') }}</h2>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between text-gray-600">
+                        <span>{{ t('booking.ticket') }}</span>
+                        <span>€{{ netto }}</span>
+                    </div>
+                    <div class="flex justify-between text-gray-600">
+                        <span>{{ t('booking.vat') }}</span>
+                        <span>€{{ btw }}</span>
+                    </div>
+                    <div class="my-2 border-t border-gray-200 pt-2 flex justify-between text-lg font-bold text-gray-900">
+                        <span>{{ t('booking.total') }}</span>
+                        <span class="text-blue-900">€{{ totaal }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-between">
+                <button
+                    type="button"
+                    onclick="history.back()"
+                    class="rounded-lg border border-gray-300 px-5 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                    {{ t('booking.change') }}
+                </button>
+                <button
+                    @click="naarBetaling"
+                    :disabled="formulier.processing"
+                    class="rounded-lg bg-blue-900 px-8 py-3 font-bold text-white hover:bg-blue-800 transition-colors disabled:opacity-50"
+                >
+                    {{ formulier.processing ? t('common.loading') : t('booking.toPayment') }}
+                </button>
+            </div>
+        </div>
+    </SchipholLayout>
+</template>
