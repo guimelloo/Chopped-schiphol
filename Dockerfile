@@ -7,7 +7,6 @@ RUN apk add --no-cache \
     libpng-dev \
     libxml2-dev \
     oniguruma-dev \
-    sqlite-dev \
     freetype-dev \
     libjpeg-turbo-dev \
     zip \
@@ -17,7 +16,6 @@ RUN apk add --no-cache \
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install \
         pdo_mysql \
-        pdo_sqlite \
         mbstring \
         exif \
         pcntl \
@@ -40,6 +38,9 @@ RUN composer dump-autoload --optimize \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 EXPOSE 9000
 
-CMD ["php-fpm"]
+ENTRYPOINT ["entrypoint.sh"]
