@@ -1,10 +1,11 @@
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3'
+import { Head, Link, router, usePage } from '@inertiajs/vue3'
 import LanguageSwitcher from '@/Components/LanguageSwitcher.vue'
 import { useI18n } from '@/composables/useI18n.js'
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 const { t } = useI18n()
+const user = computed(() => usePage().props.auth?.user)
 
 const departures = ref([
     { time: '06:15', dest: 'London Heathrow', code: 'LHR', airline: 'KLM', flight: 'KL1017', gate: 'D43', status: 'gepland' },
@@ -102,6 +103,17 @@ const features = [
                     <div class="flex items-center gap-3">
                         <LanguageSwitcher />
                         <div class="hidden md:flex items-center gap-2">
+                            <template v-if="user">
+                                <span class="text-sm text-white/60">{{ user.name }}</span>
+                                <Link :href="route('logout')" method="post" as="button" class="rounded-lg border border-white/20 px-4 py-2 text-sm font-medium text-white/80 hover:bg-white/5 hover:border-white/30 transition-all">
+                                    {{ t('nav.logout') }}
+                                </Link>
+                            </template>
+                            <template v-else>
+                                <Link :href="route('login')" class="rounded-lg border border-white/20 px-4 py-2 text-sm font-medium text-white/80 hover:bg-white/5 hover:border-white/30 transition-all">
+                                    {{ t('nav.login') }}
+                                </Link>
+                            </template>
                             <Link :href="route('coordinator.login')" class="rounded-lg bg-yellow-400 px-4 py-2 text-sm font-bold text-slate-950 hover:bg-yellow-300 transition-colors shadow-md shadow-yellow-400/20">
                                 {{ t('nav.coordinator') }}
                             </Link>
@@ -123,8 +135,15 @@ const features = [
                 <Link :href="route('vluchten.index')" class="block px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-white/5" @click="mobileOpen = false">{{ t('nav.flights') }}</Link>
                 <Link :href="route('vluchten.zoek')" class="block px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-white/5" @click="mobileOpen = false">{{ t('nav.search') }}</Link>
                 <div class="pt-2 border-t border-white/5 flex flex-col gap-2">
-                    <Link :href="route('coordinator.login')" class="block text-center rounded-lg bg-yellow-400 px-4 py-2.5 text-sm font-bold text-slate-950">{{ t('nav.coordinator') }}</Link>
-                    <Link href="/directeur/inloggen" class="block text-center rounded-lg border border-white/20 px-4 py-2.5 text-sm font-medium">{{ t('nav.director') }}</Link>
+                    <template v-if="user">
+                        <span class="text-sm text-white/50 text-center">{{ user.name }}</span>
+                        <Link :href="route('logout')" method="post" as="button" class="block text-center rounded-lg border border-white/20 px-4 py-2.5 text-sm font-medium" @click="mobileOpen = false">{{ t('nav.logout') }}</Link>
+                    </template>
+                    <template v-else>
+                        <Link :href="route('login')" class="block text-center rounded-lg border border-white/20 px-4 py-2.5 text-sm font-medium" @click="mobileOpen = false">{{ t('nav.login') }}</Link>
+                    </template>
+                    <Link :href="route('coordinator.login')" class="block text-center rounded-lg bg-yellow-400 px-4 py-2.5 text-sm font-bold text-slate-950" @click="mobileOpen = false">{{ t('nav.coordinator') }}</Link>
+                    <Link href="/directeur/inloggen" class="block text-center rounded-lg border border-white/20 px-4 py-2.5 text-sm font-medium" @click="mobileOpen = false">{{ t('nav.director') }}</Link>
                 </div>
             </div>
         </nav>
