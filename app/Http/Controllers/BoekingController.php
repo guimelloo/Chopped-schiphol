@@ -109,6 +109,12 @@ class BoekingController extends Controller
             'naam_reiziger'     => 'required|string|max:255',
             'email_reiziger'    => 'required|email|max:255',
             'telefoon_reiziger' => 'nullable|string|max:20',
+            'kaart_naam'        => 'required|string|max:255',
+            'kaart_nummer'      => 'required|digits:16|in:4242424242424242',
+            'kaart_vervaldatum' => 'required|regex:/^\d{2}\/\d{2}$/',
+            'kaart_cvv'         => 'required|digits_between:3,4',
+        ], [
+            'kaart_nummer.in' => 'Gebruik de testkaartgegevens: 4242 4242 4242 4242.',
         ]);
 
         $vlucht = Vlucht::findOrFail($validated['vlucht_id']);

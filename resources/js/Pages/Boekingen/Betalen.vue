@@ -16,6 +16,13 @@ const btw    = (parseFloat(props.prijs) * 0.21).toFixed(2)
 const totaal = parseFloat(props.prijs).toFixed(2)
 const netto  = (parseFloat(props.prijs) - parseFloat(btw)).toFixed(2)
 
+const TESTKAART = {
+    kaart_naam:        'TEST GEBRUIKER',
+    kaart_nummer:      '4242424242424242',
+    kaart_vervaldatum: '12/28',
+    kaart_cvv:         '123',
+}
+
 const formulier = useForm({
     vlucht_id:         props.data.vlucht_id,
     stoelklasse:       props.data.stoelklasse,
@@ -28,6 +35,15 @@ const formulier = useForm({
     kaart_vervaldatum: '',
     kaart_cvv:         '',
 })
+
+function vulTestkaartIn() {
+    formulier.kaart_naam        = TESTKAART.kaart_naam
+    formulier.kaart_nummer      = TESTKAART.kaart_nummer
+    formulier.kaart_vervaldatum = TESTKAART.kaart_vervaldatum
+    formulier.kaart_cvv         = TESTKAART.kaart_cvv
+    kaartNummerGeformat.value   = '4242 4242 4242 4242'
+    vervalGeformat.value        = '12/28'
+}
 
 const kaartNummerGeformat = ref('')
 const kaartType = computed(() => {
@@ -72,8 +88,16 @@ const kaartDisplayNummer = computed(() => {
     <Head title="Betaling" />
     <SchipholLayout>
         <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+            <!-- Testmodus banner -->
+            <div class="mb-6 flex items-center gap-3 rounded-xl border border-amber-300 bg-amber-50 px-5 py-4">
+                <span class="shrink-0 rounded-md bg-amber-400 px-2 py-0.5 text-xs font-black uppercase tracking-widest text-white">Testmodus</span>
+                <p class="text-sm text-amber-800">
+                    Dit is een <strong>gesimuleerde betaling</strong> — er wordt geen echt geld afgeschreven. Gebruik uitsluitend de testkaartgegevens.
+                </p>
+            </div>
+
             <h1 class="mb-2 text-3xl font-bold text-gray-900">{{ t('booking.payment') }}</h1>
-            <p class="mb-8 text-gray-600">Vul uw betaalgegevens in om de boeking te voltooien.</p>
+            <p class="mb-8 text-gray-600">Vul de testkaartgegevens in om de boeking te voltooien.</p>
 
             <!-- Step indicator -->
             <div class="mb-8 flex items-center gap-3">
@@ -146,11 +170,20 @@ const kaartDisplayNummer = computed(() => {
                     </div>
 
                     <!-- Test info -->
-                    <div class="rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-800">
-                        <p class="font-bold mb-1.5">Testmodus — geen echt geld</p>
-                        <p class="mb-0.5">Kaartnr: <strong>4242 4242 4242 4242</strong></p>
-                        <p class="mb-0.5">Vervaldatum: <strong>12/28</strong></p>
-                        <p>CVV: <strong>123</strong></p>
+                    <div class="rounded-xl border border-amber-300 bg-amber-50 p-4 text-xs text-amber-800">
+                        <p class="font-bold mb-2 text-sm">Testkaartgegevens</p>
+                        <div class="space-y-1 mb-3 font-mono">
+                            <p>Nr: <strong>4242 4242 4242 4242</strong></p>
+                            <p>Vervaldatum: <strong>12/28</strong></p>
+                            <p>CVV: <strong>123</strong></p>
+                        </div>
+                        <button
+                            type="button"
+                            @click="vulTestkaartIn"
+                            class="w-full rounded-lg bg-amber-400 py-2 text-xs font-bold text-white hover:bg-amber-500 transition-colors"
+                        >
+                            Vul testkaart automatisch in
+                        </button>
                     </div>
                 </div>
 
@@ -188,7 +221,14 @@ const kaartDisplayNummer = computed(() => {
 
                     <!-- Form -->
                     <form @submit.prevent="betalen" class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm space-y-4">
-                        <h2 class="text-lg font-bold text-gray-900 mb-2">Kaartgegevens</h2>
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-lg font-bold text-gray-900">Kaartgegevens</h2>
+                            <span class="rounded-full bg-amber-100 px-3 py-0.5 text-xs font-bold text-amber-700 uppercase tracking-wider">Testmodus</span>
+                        </div>
+
+                        <div v-if="formulier.errors.kaart_nummer" class="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+                            {{ formulier.errors.kaart_nummer }}
+                        </div>
 
                         <div>
                             <label class="mb-1 block text-sm font-semibold text-gray-700">
@@ -292,15 +332,15 @@ const kaartDisplayNummer = computed(() => {
                                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                                     </svg>
-                                    Betaal nu — €{{ totaal }}
+                                    Testbetaling bevestigen — €{{ totaal }}
                                 </span>
                             </button>
 
-                            <p class="mt-3 text-center text-xs text-gray-400 flex items-center justify-center gap-1">
+                            <p class="mt-3 text-center text-xs text-amber-600 flex items-center justify-center gap-1 font-medium">
                                 <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
-                                256-bit SSL versleuteld — uw gegevens zijn veilig
+                                Simulatie — er wordt geen echt geld afgeschreven
                             </p>
                         </div>
                     </form>
