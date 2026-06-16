@@ -1,53 +1,50 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
-import SchipholLayout from '@/Layouts/SchipholLayout.vue';
+import { Head, Link } from '@inertiajs/vue3'
+import SchipholLayout from '@/Layouts/SchipholLayout.vue'
+import { useI18n } from '@/composables/useI18n.js'
 
-defineProps({
-    vlucht: Object,
-});
+const { t } = useI18n()
+
+defineProps({ vlucht: Object })
 
 function statusKleur(status) {
-    const kleuren = {
+    return {
         gepland: 'bg-green-100 text-green-800',
         vertrokken: 'bg-blue-100 text-blue-800',
         geland: 'bg-gray-100 text-gray-800',
         geannuleerd: 'bg-red-100 text-red-800',
-    };
-    return kleuren[status] || 'bg-gray-100 text-gray-800';
+    }[status] || 'bg-gray-100 text-gray-800'
 }
 </script>
 
 <template>
-    <Head :title="`Vlucht ${vlucht.vlucht_nummer}`" />
+    <Head :title="`${t('flight.number')} ${vlucht.vlucht_nummer}`" />
     <SchipholLayout>
         <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
-            <!-- Terug -->
             <Link :href="route('vluchten.index')" class="mb-6 inline-flex items-center gap-2 text-sm text-blue-700 hover:text-blue-900">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
-                Terug naar overzicht
+                {{ t('flightList.backToOverview') }}
             </Link>
 
-            <!-- Vlucht koptekst -->
             <div class="mb-6 rounded-xl bg-blue-900 p-6 text-white shadow-lg">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
                         <div class="flex items-center gap-3">
                             <span class="text-3xl font-bold">{{ vlucht.vlucht_nummer }}</span>
                             <span :class="['rounded-full px-3 py-1 text-xs font-bold uppercase', statusKleur(vlucht.status)]">
-                                {{ vlucht.status }}
+                                {{ t('flight.statuses.' + vlucht.status) }}
                             </span>
                         </div>
                         <p class="mt-1 text-blue-200">{{ vlucht.luchtvaartmaatschappij?.naam }}</p>
                     </div>
                     <div class="text-right">
-                        <p class="text-sm text-blue-200">Vliegtuigtype</p>
+                        <p class="text-sm text-blue-200">{{ t('flight.aircraft') }}</p>
                         <p class="text-lg font-semibold">{{ vlucht.vliegtuig_type }}</p>
                     </div>
                 </div>
 
-                <!-- Route tijdlijn -->
                 <div class="mt-6 flex items-center gap-4">
                     <div>
                         <p class="text-3xl font-bold">{{ vlucht.vertrek_tijd.slice(11, 16) }}</p>
@@ -71,40 +68,37 @@ function statusKleur(status) {
                     </div>
                 </div>
 
-                <!-- Gate info -->
                 <div v-if="vlucht.gate" class="mt-4 flex items-center gap-2 rounded-lg bg-blue-800 px-4 py-2">
                     <svg class="h-4 w-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     </svg>
                     <span class="text-sm">
-                        <span class="font-semibold">Gate {{ vlucht.gate.nummer }}</span>
-                        — Terminal {{ vlucht.gate.terminal }}
+                        <span class="font-semibold">{{ t('flight.gate') }} {{ vlucht.gate.nummer }}</span>
+                        — {{ t('flight.terminal') }} {{ vlucht.gate.terminal }}
                     </span>
                 </div>
             </div>
 
             <div class="grid gap-6 md:grid-cols-2">
-                <!-- Stoelklassen -->
                 <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                    <h2 class="mb-4 text-lg font-bold text-gray-900">Stoelklassen &amp; Beschikbaarheid</h2>
+                    <h2 class="mb-4 text-lg font-bold text-gray-900">{{ t('flight.economy') }} &amp; {{ t('flight.business') }}</h2>
 
-                    <!-- Economy -->
                     <div class="mb-4 rounded-lg bg-blue-50 p-4">
                         <div class="flex items-center justify-between">
                             <div>
-                                <h3 class="font-bold text-blue-900">Economy Class</h3>
+                                <h3 class="font-bold text-blue-900">{{ t('flight.economy') }}</h3>
                                 <p class="text-sm text-gray-600">Standaard stoel, inclusief handbagage</p>
                             </div>
                             <div class="text-right">
                                 <p class="text-2xl font-bold text-blue-900">€{{ vlucht.prijs_economy }}</p>
-                                <p class="text-xs text-gray-500">per persoon</p>
+                                <p class="text-xs text-gray-500">{{ t('flight.pricePerPerson') }}</p>
                             </div>
                         </div>
                         <div class="mt-3 flex items-center justify-between">
                             <div class="flex items-center gap-2">
                                 <div :class="['h-2.5 w-2.5 rounded-full', vlucht.beschikbaar_economy > 0 ? 'bg-green-500' : 'bg-red-500']"></div>
                                 <span class="text-sm text-gray-700">
-                                    {{ vlucht.beschikbaar_economy > 0 ? `${vlucht.beschikbaar_economy} stoelen beschikbaar` : 'Uitverkocht' }}
+                                    {{ vlucht.beschikbaar_economy > 0 ? `${vlucht.beschikbaar_economy} ${t('flight.seats')}` : t('flight.soldOut') }}
                                 </span>
                             </div>
                             <Link
@@ -112,28 +106,27 @@ function statusKleur(status) {
                                 :href="route('boekingen.create', { vlucht: vlucht.id, klasse: 'economy' })"
                                 class="rounded-lg bg-blue-900 px-4 py-1.5 text-sm font-semibold text-white hover:bg-blue-800 transition-colors"
                             >
-                                Boek economy
+                                {{ t('flight.bookEconomy') }}
                             </Link>
                         </div>
                     </div>
 
-                    <!-- Business -->
                     <div class="rounded-lg bg-yellow-50 p-4">
                         <div class="flex items-center justify-between">
                             <div>
-                                <h3 class="font-bold text-yellow-900">Business Class</h3>
+                                <h3 class="font-bold text-yellow-900">{{ t('flight.business') }}</h3>
                                 <p class="text-sm text-gray-600">Premium stoel, lounge toegang</p>
                             </div>
                             <div class="text-right">
                                 <p class="text-2xl font-bold text-yellow-900">€{{ vlucht.prijs_business }}</p>
-                                <p class="text-xs text-gray-500">per persoon</p>
+                                <p class="text-xs text-gray-500">{{ t('flight.pricePerPerson') }}</p>
                             </div>
                         </div>
                         <div class="mt-3 flex items-center justify-between">
                             <div class="flex items-center gap-2">
                                 <div :class="['h-2.5 w-2.5 rounded-full', vlucht.beschikbaar_business > 0 ? 'bg-green-500' : 'bg-red-500']"></div>
                                 <span class="text-sm text-gray-700">
-                                    {{ vlucht.beschikbaar_business > 0 ? `${vlucht.beschikbaar_business} stoelen beschikbaar` : 'Uitverkocht' }}
+                                    {{ vlucht.beschikbaar_business > 0 ? `${vlucht.beschikbaar_business} ${t('flight.seats')}` : t('flight.soldOut') }}
                                 </span>
                             </div>
                             <Link
@@ -141,55 +134,50 @@ function statusKleur(status) {
                                 :href="route('boekingen.create', { vlucht: vlucht.id, klasse: 'business' })"
                                 class="rounded-lg bg-yellow-500 px-4 py-1.5 text-sm font-semibold text-white hover:bg-yellow-600 transition-colors"
                             >
-                                Boek business
+                                {{ t('flight.bookBusiness') }}
                             </Link>
                         </div>
                     </div>
                 </div>
 
-                <!-- Services & details -->
                 <div class="space-y-4">
                     <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                        <h2 class="mb-4 text-lg font-bold text-gray-900">Inbegrepen Services</h2>
+                        <h2 class="mb-4 text-lg font-bold text-gray-900">{{ t('flight.services') }}</h2>
                         <ul v-if="vlucht.services?.length" class="space-y-2">
-                            <li
-                                v-for="service in vlucht.services"
-                                :key="service"
-                                class="flex items-center gap-3 text-gray-700"
-                            >
+                            <li v-for="service in vlucht.services" :key="service" class="flex items-center gap-3 text-gray-700">
                                 <svg class="h-5 w-5 shrink-0 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
                                 {{ service }}
                             </li>
                         </ul>
-                        <p v-else class="text-gray-500">Geen extra services</p>
+                        <p v-else class="text-gray-500">{{ t('flight.noServices') }}</p>
                     </div>
 
                     <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                        <h2 class="mb-4 text-lg font-bold text-gray-900">Vluchtdetails</h2>
+                        <h2 class="mb-4 text-lg font-bold text-gray-900">{{ t('flight.details') }}</h2>
                         <dl class="space-y-2 text-sm">
                             <div class="flex justify-between">
-                                <dt class="text-gray-500">Vluchtnummer</dt>
+                                <dt class="text-gray-500">{{ t('flight.number') }}</dt>
                                 <dd class="font-semibold text-gray-900">{{ vlucht.vlucht_nummer }}</dd>
                             </div>
                             <div class="flex justify-between">
-                                <dt class="text-gray-500">Vliegtuigtype</dt>
+                                <dt class="text-gray-500">{{ t('flight.aircraft') }}</dt>
                                 <dd class="font-semibold text-gray-900">{{ vlucht.vliegtuig_type }}</dd>
                             </div>
                             <div class="flex justify-between">
-                                <dt class="text-gray-500">Vluchtduur</dt>
+                                <dt class="text-gray-500">{{ t('flight.duration') }}</dt>
                                 <dd class="font-semibold text-gray-900">{{ vlucht.duur }}</dd>
                             </div>
                             <div v-if="vlucht.gate" class="flex justify-between">
-                                <dt class="text-gray-500">Gate</dt>
-                                <dd class="font-semibold text-gray-900">{{ vlucht.gate.nummer }} (Terminal {{ vlucht.gate.terminal }})</dd>
+                                <dt class="text-gray-500">{{ t('flight.gate') }}</dt>
+                                <dd class="font-semibold text-gray-900">{{ vlucht.gate.nummer }} ({{ t('flight.terminal') }} {{ vlucht.gate.terminal }})</dd>
                             </div>
                             <div class="flex justify-between">
-                                <dt class="text-gray-500">Status</dt>
+                                <dt class="text-gray-500">{{ t('flight.status') }}</dt>
                                 <dd>
                                     <span :class="['rounded-full px-2 py-0.5 text-xs font-semibold', statusKleur(vlucht.status)]">
-                                        {{ vlucht.status }}
+                                        {{ t('flight.statuses.' + vlucht.status) }}
                                     </span>
                                 </dd>
                             </div>

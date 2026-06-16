@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return redirect()->route('vluchten.index');
-});
+    return Inertia::render('Welcome');
+})->name('home');
 
 // Vluchten
 Route::get('/vluchten', [VluchtController::class, 'index'])->name('vluchten.index');

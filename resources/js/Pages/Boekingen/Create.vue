@@ -1,12 +1,15 @@
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
-import SchipholLayout from '@/Layouts/SchipholLayout.vue';
+import { Head, Link, useForm } from '@inertiajs/vue3'
+import SchipholLayout from '@/Layouts/SchipholLayout.vue'
+import { useI18n } from '@/composables/useI18n.js'
+
+const { t } = useI18n()
 
 const props = defineProps({
     vlucht: Object,
     stoelklasse: String,
     prijs: [String, Number],
-});
+})
 
 const formulier = useForm({
     vlucht_id: props.vlucht.id,
@@ -15,28 +18,44 @@ const formulier = useForm({
     naam_reiziger: '',
     email_reiziger: '',
     telefoon_reiziger: '',
-});
+})
 
 function naarBevestiging() {
-    formulier.post(route('boekingen.bevestigen'));
+    formulier.post(route('boekingen.bevestigen'))
 }
 </script>
 
 <template>
-    <Head title="Boeking aanmaken" />
+    <Head :title="t('booking.create')" />
     <SchipholLayout>
         <div class="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
-            <!-- Terug -->
             <Link :href="route('vluchten.show', vlucht.id)" class="mb-6 inline-flex items-center gap-2 text-sm text-blue-700 hover:text-blue-900">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
-                Terug naar vlucht
+                {{ t('booking.backToFlights') }}
             </Link>
 
-            <h1 class="mb-6 text-3xl font-bold text-gray-900">Boeking aanmaken</h1>
+            <h1 class="mb-6 text-3xl font-bold text-gray-900">{{ t('booking.create') }}</h1>
 
-            <!-- Vlucht samenvatting -->
+            <!-- Step indicator -->
+            <div class="mb-8 flex items-center gap-3">
+                <div class="flex items-center gap-2">
+                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-900 text-white text-sm font-bold">1</div>
+                    <span class="text-sm font-semibold text-blue-900">{{ t('booking.step1') }}</span>
+                </div>
+                <div class="h-px flex-1 bg-gray-300"></div>
+                <div class="flex items-center gap-2">
+                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-gray-500 text-sm font-bold">2</div>
+                    <span class="text-sm text-gray-500">{{ t('booking.step2') }}</span>
+                </div>
+                <div class="h-px flex-1 bg-gray-300"></div>
+                <div class="flex items-center gap-2">
+                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-gray-500 text-sm font-bold">3</div>
+                    <span class="text-sm text-gray-500">{{ t('booking.step3') }}</span>
+                </div>
+            </div>
+
             <div class="mb-6 rounded-xl bg-blue-900 p-5 text-white">
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div>
@@ -60,28 +79,25 @@ function naarBevestiging() {
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="text-xs text-blue-200">Stoelklasse</p>
-                        <p class="rounded-full bg-yellow-400 px-3 py-1 text-sm font-bold text-blue-900 capitalize">
-                            {{ stoelklasse }}
-                        </p>
+                        <p class="text-xs text-blue-200">{{ t('booking.seatClass') }}</p>
+                        <p class="rounded-full bg-yellow-400 px-3 py-1 text-sm font-bold text-blue-900 capitalize">{{ stoelklasse }}</p>
                         <p class="mt-1 text-xl font-bold">€{{ prijs }}</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Boekingsformulier -->
             <form @submit.prevent="naarBevestiging" class="space-y-5 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h2 class="text-lg font-bold text-gray-900">Reizigersgegevens</h2>
+                <h2 class="text-lg font-bold text-gray-900">{{ t('booking.passenger') }}</h2>
 
                 <div>
                     <label class="mb-1 block text-sm font-semibold text-gray-700">
-                        Volledige naam <span class="text-red-500">*</span>
+                        {{ t('booking.name') }} <span class="text-red-500">*</span>
                     </label>
                     <input
                         v-model="formulier.naam_reiziger"
                         type="text"
                         required
-                        placeholder="Voornaam Achternaam"
+                        :placeholder="t('booking.namePlaceholder')"
                         class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
                         :class="{ 'border-red-500': formulier.errors.naam_reiziger }"
                     />
@@ -90,13 +106,13 @@ function naarBevestiging() {
 
                 <div>
                     <label class="mb-1 block text-sm font-semibold text-gray-700">
-                        E-mailadres <span class="text-red-500">*</span>
+                        {{ t('booking.email') }} <span class="text-red-500">*</span>
                     </label>
                     <input
                         v-model="formulier.email_reiziger"
                         type="email"
                         required
-                        placeholder="naam@voorbeeld.nl"
+                        :placeholder="t('booking.emailPlaceholder')"
                         class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
                         :class="{ 'border-red-500': formulier.errors.email_reiziger }"
                     />
@@ -104,25 +120,25 @@ function naarBevestiging() {
                 </div>
 
                 <div>
-                    <label class="mb-1 block text-sm font-semibold text-gray-700">Telefoonnummer</label>
+                    <label class="mb-1 block text-sm font-semibold text-gray-700">{{ t('booking.phone') }}</label>
                     <input
                         v-model="formulier.telefoon_reiziger"
                         type="tel"
-                        placeholder="+31 6 12345678"
+                        :placeholder="t('booking.phonePlaceholder')"
                         class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
                     />
                 </div>
 
                 <div>
-                    <label class="mb-1 block text-sm font-semibold text-gray-700">Stoelvoorkeur</label>
+                    <label class="mb-1 block text-sm font-semibold text-gray-700">{{ t('booking.seatPref') }}</label>
                     <select
                         v-model="formulier.stoel_voorkeur"
                         class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
                     >
-                        <option value="">Geen voorkeur</option>
-                        <option value="raam">Raam</option>
-                        <option value="midden">Midden</option>
-                        <option value="gangpad">Gangpad</option>
+                        <option value="">{{ t('booking.noPref') }}</option>
+                        <option value="raam">{{ t('booking.window') }}</option>
+                        <option value="midden">{{ t('booking.middle') }}</option>
+                        <option value="gangpad">{{ t('booking.aisle') }}</option>
                     </select>
                 </div>
 
@@ -132,7 +148,7 @@ function naarBevestiging() {
                         :disabled="formulier.processing"
                         class="rounded-lg bg-blue-900 px-6 py-3 font-semibold text-white hover:bg-blue-800 transition-colors disabled:opacity-50"
                     >
-                        Naar kostenoverzicht →
+                        {{ formulier.processing ? t('common.loading') : t('booking.toSummary') }} →
                     </button>
                 </div>
             </form>
