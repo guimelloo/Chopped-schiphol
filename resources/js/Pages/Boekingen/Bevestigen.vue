@@ -17,8 +17,8 @@ const netto  = (parseFloat(props.prijs) - parseFloat(btw)).toFixed(2)
 
 const formulier = useForm({ ...props.data })
 
-function bevestigen() {
-    formulier.post(route('boekingen.store'))
+function naarBetaling() {
+    formulier.post(route('boekingen.betalen'))
 }
 </script>
 
@@ -44,6 +44,7 @@ function bevestigen() {
                 <div class="flex items-center gap-2">
                     <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-gray-500 text-sm font-bold">3</div>
                     <span class="text-sm text-gray-500">{{ t('booking.step3') }}</span>
+
                 </div>
             </div>
 
@@ -133,11 +134,11 @@ function bevestigen() {
                     {{ t('booking.change') }}
                 </button>
                 <button
-                    @click="bevestigen"
+                    @click="naarBetaling"
                     :disabled="formulier.processing"
-                    class="rounded-lg bg-green-600 px-8 py-3 font-bold text-white hover:bg-green-700 transition-colors disabled:opacity-50"
+                    class="rounded-lg bg-blue-900 px-8 py-3 font-bold text-white hover:bg-blue-800 transition-colors disabled:opacity-50"
                 >
-                    {{ formulier.processing ? t('common.loading') : t('booking.confirmBtn') }}
+                    {{ formulier.processing ? t('common.loading') : t('booking.toPayment') }}
                 </button>
             </div>
         </div>

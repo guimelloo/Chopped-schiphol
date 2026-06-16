@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'coordinator' => \App\Http\Middleware\CoordinatorMiddleware::class,
+            'directeur'   => \App\Http\Middleware\DirecteurMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

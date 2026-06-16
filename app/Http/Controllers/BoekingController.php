@@ -69,6 +69,37 @@ class BoekingController extends Controller
         ]);
     }
 
+    public function betalen(Request $request): Response
+    {
+        $data = $request->validate([
+            'vlucht_id'         => 'required|exists:vluchten,id',
+            'stoelklasse'       => 'required|in:economy,business',
+            'stoel_voorkeur'    => 'nullable|in:raam,midden,gangpad',
+            'naam_reiziger'     => 'required|string|max:255',
+            'email_reiziger'    => 'required|email|max:255',
+            'telefoon_reiziger' => 'nullable|string|max:20',
+        ]);
+
+        $vlucht = Vlucht::with('luchtvaartmaatschappij')->findOrFail($data['vlucht_id']);
+        $prijs  = $data['stoelklasse'] === 'business'
+            ? $vlucht->prijs_business
+            : $vlucht->prijs_economy;
+
+        return Inertia::render('Boekingen/Betalen', [
+            'data'  => $data,
+            'prijs' => $prijs,
+            'vlucht' => [
+                'id'                     => $vlucht->id,
+                'vlucht_nummer'          => $vlucht->vlucht_nummer,
+                'vertrek_luchthaven'     => $vlucht->vertrek_luchthaven,
+                'aankomst_luchthaven'    => $vlucht->aankomst_luchthaven,
+                'vertrek_tijd'           => $vlucht->vertrek_tijd->format('Y-m-d H:i'),
+                'aankomst_tijd'          => $vlucht->aankomst_tijd->format('Y-m-d H:i'),
+                'luchtvaartmaatschappij' => $vlucht->luchtvaartmaatschappij?->naam,
+            ],
+        ]);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

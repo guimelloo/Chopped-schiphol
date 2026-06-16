@@ -47,6 +47,11 @@ return [
             'driver' => 'session',
             'provider' => 'coordinatoren',
         ],
+
+        'directeur' => [
+            'driver' => 'session',
+            'provider' => 'directeuren',
+        ],
     ],
 
     /*
@@ -75,6 +80,11 @@ return [
         'coordinatoren' => [
             'driver' => 'eloquent',
             'model' => App\Models\Coordinator::class,
+        ],
+
+        'directeuren' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Directeur::class,
         ],
     ],
 
