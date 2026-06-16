@@ -29,7 +29,7 @@ class CoordinatorController extends Controller
 
         if (Auth::guard('coordinator')->attempt([
             'gebruikersnaam' => $credentials['gebruikersnaam'],
-            'wachtwoord'     => $credentials['wachtwoord'],
+            'password'       => $credentials['wachtwoord'],
         ], $request->boolean('onthouden'))) {
             $request->session()->regenerate();
             return redirect()->route('coordinator.dashboard');

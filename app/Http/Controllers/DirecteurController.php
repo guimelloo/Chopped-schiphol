@@ -27,7 +27,7 @@ class DirecteurController extends Controller
 
         if (Auth::guard('directeur')->attempt([
             'gebruikersnaam' => $credentials['gebruikersnaam'],
-            'wachtwoord'     => $credentials['wachtwoord'],
+            'password'       => $credentials['wachtwoord'],
         ])) {
             $request->session()->regenerate();
             return redirect('/directeur/dashboard');
