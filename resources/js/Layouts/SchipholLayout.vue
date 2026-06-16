@@ -1,11 +1,12 @@
 <script setup>
-import { Link } from '@inertiajs/vue3'
+import { Link, usePage } from '@inertiajs/vue3'
 import LanguageSwitcher from '@/Components/LanguageSwitcher.vue'
 import { useI18n } from '@/composables/useI18n.js'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const { t } = useI18n()
 const mobileOpen = ref(false)
+const user = computed(() => usePage().props.auth?.user)
 </script>
 
 <template>
@@ -35,6 +36,17 @@ const mobileOpen = ref(false)
                     <div class="flex items-center gap-3">
                         <LanguageSwitcher />
                         <div class="hidden md:flex items-center gap-2">
+                            <template v-if="user">
+                                <span class="text-sm text-white/80">{{ user.name }}</span>
+                                <Link :href="route('logout')" method="post" as="button" class="rounded border border-white/30 px-3 py-1.5 text-sm font-semibold text-white hover:bg-white/10 transition-colors">
+                                    {{ t('nav.logout') }}
+                                </Link>
+                            </template>
+                            <template v-else>
+                                <Link :href="route('login')" class="rounded border border-white/30 px-3 py-1.5 text-sm font-semibold text-white hover:bg-white/10 transition-colors">
+                                    {{ t('nav.login') }}
+                                </Link>
+                            </template>
                             <Link :href="route('coordinator.login')" class="rounded bg-yellow-400 px-3 py-1.5 text-sm font-semibold text-blue-900 hover:bg-yellow-300 transition-colors">
                                 {{ t('nav.coordinator') }}
                             </Link>
@@ -62,10 +74,21 @@ const mobileOpen = ref(false)
                     {{ t('nav.search') }}
                 </Link>
                 <div class="pt-2 border-t border-blue-800 flex flex-col gap-2">
-                    <Link :href="route('coordinator.login')" class="inline-flex justify-center rounded bg-yellow-400 px-3 py-2 text-sm font-semibold text-blue-900">
+                    <template v-if="user">
+                        <span class="text-sm text-white/70 text-center">{{ user.name }}</span>
+                        <Link :href="route('logout')" method="post" as="button" class="inline-flex justify-center rounded border border-white/30 px-3 py-2 text-sm font-semibold text-white" @click="mobileOpen = false">
+                            {{ t('nav.logout') }}
+                        </Link>
+                    </template>
+                    <template v-else>
+                        <Link :href="route('login')" class="inline-flex justify-center rounded border border-white/30 px-3 py-2 text-sm font-semibold text-white" @click="mobileOpen = false">
+                            {{ t('nav.login') }}
+                        </Link>
+                    </template>
+                    <Link :href="route('coordinator.login')" class="inline-flex justify-center rounded bg-yellow-400 px-3 py-2 text-sm font-semibold text-blue-900" @click="mobileOpen = false">
                         {{ t('nav.coordinator') }}
                     </Link>
-                    <Link href="/directeur/inloggen" class="inline-flex justify-center rounded border border-white/30 px-3 py-2 text-sm font-semibold text-white">
+                    <Link href="/directeur/inloggen" class="inline-flex justify-center rounded border border-white/30 px-3 py-2 text-sm font-semibold text-white" @click="mobileOpen = false">
                         {{ t('nav.director') }}
                     </Link>
                 </div>
