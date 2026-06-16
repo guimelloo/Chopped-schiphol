@@ -5,8 +5,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     volumes:
-      - .:/var/www/html
-      - /var/www/html/vendor
+      - app-data:/var/www/html
     env_file:
       - .env
     depends_on:
@@ -21,7 +20,7 @@ services:
     ports:
       - "8000:80"
     volumes:
-      - .:/var/www/html
+      - app-data:/var/www/html
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - app
@@ -66,4 +65,5 @@ networks:
   laravel:
 
 volumes:
+  app-data:
   mysql-data:

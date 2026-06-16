@@ -1,6 +1,20 @@
+FROM composer:latest AS composer-build
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install --no-scripts --no-autoloader --no-dev --prefer-dist
+COPY . .
+RUN composer dump-autoload --optimize
+
+FROM node:22-alpine AS node-build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+COPY --from=composer-build /app/vendor /app/vendor
+RUN echo "VITE_APP_NAME=Chopped Schiphol" > .env && npm run build
+
 FROM php:8.4-fpm-alpine
 
-# System dependencies
 RUN apk add --no-cache \
     git \
     curl \
@@ -12,7 +26,6 @@ RUN apk add --no-cache \
     zip \
     unzip
 
-# PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install \
         pdo_mysql \
@@ -23,19 +36,13 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
         gd \
         opcache
 
-# Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
 WORKDIR /var/www/html
 
-# Install PHP dependencies first (layer cache)
-COPY composer.json composer.lock ./
-RUN composer install --no-scripts --no-autoloader --no-dev --prefer-dist
-
 COPY . .
+COPY --from=composer-build /app/vendor /var/www/html/vendor
+COPY --from=node-build /app/public/build /var/www/html/public/build
 
-RUN composer dump-autoload --optimize \
-    && chown -R www-data:www-data storage bootstrap/cache \
+RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
