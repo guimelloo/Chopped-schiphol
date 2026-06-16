@@ -8,18 +8,21 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('wishlists', function (Blueprint $table) {
+        Schema::create('verlanglijsten', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete(); // coordinator
-            $table->string('airline_name')->nullable();
-            $table->string('destination')->nullable();
-            $table->text('notes')->nullable();
+            $table->foreignId('coordinator_id')->constrained('coordinatoren')->cascadeOnDelete();
+            $table->string('maatschappij_naam')->nullable();
+            $table->string('bestemming');
+            $table->date('gewenste_datum')->nullable();
+            $table->enum('stoelklasse', ['economy', 'business'])->default('economy');
+            $table->text('opmerkingen')->nullable();
+            $table->enum('prioriteit', ['hoog', 'normaal', 'laag'])->default('normaal');
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('wishlists');
+        Schema::dropIfExists('verlanglijsten');
     }
 };

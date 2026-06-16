@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 
 class Coordinator extends Authenticatable
@@ -12,7 +13,7 @@ class Coordinator extends Authenticatable
 
     protected $table = 'coordinatoren';
 
-    protected $fillable = ['naam', 'gebruikersnaam', 'wachtwoord', 'luchtvaartmaatschappij_id'];
+    protected $fillable = ['naam', 'gebruikersnaam', 'email', 'wachtwoord', 'luchtvaartmaatschappij_id', 'actief'];
 
     protected $hidden = ['wachtwoord', 'remember_token'];
 
@@ -20,6 +21,7 @@ class Coordinator extends Authenticatable
     {
         return [
             'wachtwoord' => 'hashed',
+            'actief'     => 'boolean',
         ];
     }
 
@@ -31,5 +33,10 @@ class Coordinator extends Authenticatable
     public function luchtvaartmaatschappij(): BelongsTo
     {
         return $this->belongsTo(Luchtvaartmaatschappij::class);
+    }
+
+    public function verlanglijsten(): HasMany
+    {
+        return $this->hasMany(Verlanglijst::class);
     }
 }
