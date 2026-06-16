@@ -1,10 +1,9 @@
 <script setup>
-import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3'
+import LanguageSwitcher from '@/Components/LanguageSwitcher.vue'
+import { useI18n } from '@/composables/useI18n.js'
+
+const { t } = useI18n()
 
 const form = useForm({
     name: '',
@@ -21,93 +20,104 @@ const submit = () => {
 </script>
 
 <template>
-    <GuestLayout>
-        <Head title="Register" />
+    <Head title="Registreren — Chopped Schiphol" />
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="name" value="Name" />
+    <div class="min-h-screen bg-slate-950 flex flex-col">
+        <div class="border-b border-white/5 px-4 py-3 flex items-center justify-between">
+            <Link href="/" class="flex items-center gap-2">
+                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-yellow-400">
+                    <svg class="h-4 w-4 text-slate-950" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+                    </svg>
+                </div>
+                <div class="flex flex-col leading-none">
+                    <span class="text-[10px] font-bold tracking-[0.2em] text-yellow-400 uppercase">Chopped</span>
+                    <span class="text-xs font-extrabold text-white">Schiphol</span>
+                </div>
+            </Link>
+            <LanguageSwitcher />
+        </div>
 
-                <TextInput
-                    id="name"
-                    type="text"
-                    class="mt-1 block w-full"
-                    v-model="form.name"
-                    required
-                    autofocus
-                    autocomplete="name"
-                />
+        <div class="flex flex-1 items-center justify-center px-4 py-16">
+            <div class="w-full max-w-md">
+                <div class="text-center mb-8">
+                    <div class="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-yellow-400/10 border border-yellow-400/20 mb-4">
+                        <svg class="h-8 w-8 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                        </svg>
+                    </div>
+                    <h1 class="text-2xl font-extrabold text-white">Account aanmaken</h1>
+                    <p class="mt-1 text-sm text-slate-400">Maak een Chopped Schiphol account aan</p>
+                </div>
 
-                <InputError class="mt-2" :message="form.errors.name" />
+                <form @submit.prevent="submit" class="space-y-4">
+                    <div>
+                        <label class="mb-1.5 block text-sm font-semibold text-slate-300">{{ t('common.name') }}</label>
+                        <input
+                            v-model="form.name"
+                            type="text"
+                            required
+                            autofocus
+                            autocomplete="name"
+                            placeholder="Jan de Vries"
+                            :class="['w-full rounded-xl border bg-white/5 px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 transition-all', form.errors.name ? 'border-red-500/50 focus:ring-red-500/30' : 'border-white/10 focus:ring-yellow-400/30 focus:border-yellow-400/30']"
+                        />
+                        <p v-if="form.errors.name" class="mt-1.5 text-xs text-red-400">{{ form.errors.name }}</p>
+                    </div>
+
+                    <div>
+                        <label class="mb-1.5 block text-sm font-semibold text-slate-300">{{ t('common.email') }}</label>
+                        <input
+                            v-model="form.email"
+                            type="email"
+                            required
+                            autocomplete="username"
+                            placeholder="naam@voorbeeld.nl"
+                            :class="['w-full rounded-xl border bg-white/5 px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 transition-all', form.errors.email ? 'border-red-500/50 focus:ring-red-500/30' : 'border-white/10 focus:ring-yellow-400/30 focus:border-yellow-400/30']"
+                        />
+                        <p v-if="form.errors.email" class="mt-1.5 text-xs text-red-400">{{ form.errors.email }}</p>
+                    </div>
+
+                    <div>
+                        <label class="mb-1.5 block text-sm font-semibold text-slate-300">Wachtwoord</label>
+                        <input
+                            v-model="form.password"
+                            type="password"
+                            required
+                            autocomplete="new-password"
+                            placeholder="Minimaal 8 tekens"
+                            :class="['w-full rounded-xl border bg-white/5 px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 transition-all', form.errors.password ? 'border-red-500/50 focus:ring-red-500/30' : 'border-white/10 focus:ring-yellow-400/30 focus:border-yellow-400/30']"
+                        />
+                        <p v-if="form.errors.password" class="mt-1.5 text-xs text-red-400">{{ form.errors.password }}</p>
+                    </div>
+
+                    <div>
+                        <label class="mb-1.5 block text-sm font-semibold text-slate-300">Wachtwoord bevestigen</label>
+                        <input
+                            v-model="form.password_confirmation"
+                            type="password"
+                            required
+                            autocomplete="new-password"
+                            placeholder="••••••••"
+                            :class="['w-full rounded-xl border bg-white/5 px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 transition-all', form.errors.password_confirmation ? 'border-red-500/50 focus:ring-red-500/30' : 'border-white/10 focus:ring-yellow-400/30 focus:border-yellow-400/30']"
+                        />
+                        <p v-if="form.errors.password_confirmation" class="mt-1.5 text-xs text-red-400">{{ form.errors.password_confirmation }}</p>
+                    </div>
+
+                    <button
+                        type="submit"
+                        :disabled="form.processing"
+                        class="w-full rounded-xl bg-yellow-400 py-3.5 text-sm font-bold text-slate-950 hover:bg-yellow-300 active:scale-[0.98] transition-all shadow-lg shadow-yellow-400/20 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+                    >
+                        {{ form.processing ? 'Bezig...' : 'Account aanmaken' }}
+                    </button>
+                </form>
+
+                <p class="mt-6 text-center text-xs text-slate-500">
+                    Al een account?
+                    <Link :href="route('login')" class="text-yellow-400 hover:text-yellow-300 font-semibold transition-colors">Inloggen</Link>
+                </p>
             </div>
-
-            <div class="mt-4">
-                <InputLabel for="email" value="Email" />
-
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autocomplete="username"
-                />
-
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-
-                <TextInput
-                    id="password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password"
-                    required
-                    autocomplete="new-password"
-                />
-
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel
-                    for="password_confirmation"
-                    value="Confirm Password"
-                />
-
-                <TextInput
-                    id="password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password_confirmation"
-                    required
-                    autocomplete="new-password"
-                />
-
-                <InputError
-                    class="mt-2"
-                    :message="form.errors.password_confirmation"
-                />
-            </div>
-
-            <div class="mt-4 flex items-center justify-end">
-                <Link
-                    :href="route('login')"
-                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >
-                    Already registered?
-                </Link>
-
-                <PrimaryButton
-                    class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    Register
-                </PrimaryButton>
-            </div>
-        </form>
-    </GuestLayout>
+        </div>
+    </div>
 </template>
